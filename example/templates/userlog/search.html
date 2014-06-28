@@ -1,0 +1,75 @@
+{% extends "admin/base_site.html" %}
+{% load humanize %}
+
+{% block content %}
+
+<form action="{% url 'search' %}" method="GET">
+<label for="username">{{ username_field|capfirst }}:</label>
+<input type="text" name="username">
+<input type="submit" value="Search">
+</form>
+
+{% if log %}
+<table id="result_list" class="module">
+    <thead>
+        <tr>
+            <th>
+                Time
+            </th>
+            <th>
+                URL
+            </th>
+            <th>
+                Type
+            </th>
+            <th>
+                Result
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for line in log %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+            <td>
+                {{ line.datetime|naturaltime }}
+            </td>
+            <td>
+                {% if line.method == 'GET' %}
+                <a href="{{ line.path }}">{{ line.path }}</a>
+                {% else %}
+                {{ line.path }}
+                {% endif %}
+            </td>
+            <td>
+                {% if line.method == 'GET' or line.method == 'HEAD' %}
+                Read
+                {% elif line.method == 'POST' %}
+                Write
+                {% else %}
+                Other
+                {% endif %}
+                ({{ line.method }})
+            </td>
+            <td style="background-color: #{% if line.code < 400 %}DDFFDD{% else %}FFEFEF{% endif %};">
+                {% if line.code < 200 %}
+                Informational
+                {% elif line.code < 300 %}
+                Success
+                {% elif line.code < 400 %}
+                Redirection
+                {% elif line.code < 500 %}
+                Client error
+                {% elif line.code < 600 %}
+                Server error
+                {% else %}
+                Non-standard
+                {% endif %}
+                ({{ line.code }})
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% endblock %}

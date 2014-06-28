@@ -1,4 +1,5 @@
 import json
+import time
 
 from .util import get_redis_client, get_userlog_settings
 
@@ -16,7 +17,7 @@ class UserLogMiddleware(object):
         log_key = 'log:{}'.format(request.user.get_username())
 
         pipe = redis.pipeline()
-        pipe.lpush(log_key, json.dumps(log))
+        pipe.lpush(log_key, json.dumps(log).encode())
         pipe.ltrim(log_key, 0, options.max_size)
         pipe.expire(log_key, options.timeout)
         pipe.execute()
@@ -33,4 +34,5 @@ class UserLogMiddleware(object):
             'method': request.method,
             'path': request.get_full_path(),
             'code': response.status_code,
+            'time': time.time(),
         }
