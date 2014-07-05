@@ -1,6 +1,7 @@
 import datetime
 from collections import namedtuple
 import json
+import re
 
 import redis
 
@@ -85,8 +86,9 @@ def get_token(username, length=20, timeout=20):
     return token
 
 
-UserLogSettings = namedtuple('UserLogSettings',
-                             ['timeout', 'max_size', 'publish'])
+UserLogSettings = namedtuple(
+    'UserLogSettings',
+    ['timeout', 'max_size', 'publish', 'ignore_urls'])
 
 
 def get_userlog_settings():
@@ -97,6 +99,7 @@ def get_userlog_settings():
 
     userlog = settings.CACHES['userlog']
     options = userlog.get('OPTIONS', {})
+    ignore_urls = getattr(settings, 'USERLOG_IGNORE_URLS', [])
 
     # Coerce values into expected types in order to detect invalid settings.
     _settings = UserLogSettings(
@@ -104,6 +107,7 @@ def get_userlog_settings():
         timeout=int(userlog.get('TIMEOUT', 300)),
         max_size=int(options.get('MAX_SIZE', 25)),
         publish=bool(userlog.get('PUBLISH', True)),
+        ignore_urls=[re.compile(pattern) for pattern in ignore_urls],
     )
 
     return _settings
