@@ -1,4 +1,5 @@
 import asyncio
+import json
 import logging
 
 import asyncio_redis
@@ -43,21 +44,33 @@ def userlog(websocket, uri):
     channel = 'userlog:{}'.format(log_key)
 
     try:
-        # Send backlock
-        log = yield from redis.lrange(log_key, 0, -1)
-        for item in reversed(list(log)):
-            item = yield from item
-            yield from websocket.send(item)
+        if channel.endswith('*'):       # logs for several users
+            # Stream new lines
+            subscriber = yield from redis.start_subscribe()
+            yield from subscriber.psubscribe([channel])
+            while True:
+                reply = yield from subscriber.next_published()
+                if not websocket.open:
+                    break
+                data = json.loads(reply.value)
+                data['username'] = reply.channel.rpartition(':')[2]
+                yield from websocket.send(json.dumps(data))
 
-        # Stream new elements
-        subscriber = yield from redis.start_subscribe()
-        yield from subscriber.subscribe([channel])
-        while True:
-            reply = yield from subscriber.next_published()
-            if websocket.open:
+        else:                           # logs for a single user
+            # Send backlock
+            log = yield from redis.lrange(log_key, 0, -1)
+            for item in reversed(list(log)):
+                item = yield from item
+                yield from websocket.send(item)
+
+            # Stream new lines
+            subscriber = yield from redis.start_subscribe()
+            yield from subscriber.subscribe([channel])
+            while True:
+                reply = yield from subscriber.next_published()
+                if not websocket.open:
+                    break
                 yield from websocket.send(reply.value)
-            else:
-                break
 
     finally:
         redis.close()

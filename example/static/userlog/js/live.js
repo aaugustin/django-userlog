@@ -6,6 +6,7 @@
 
     $.fn.userlog = function (options) {
         var ws = new WebSocket(options.wsuri),
+            big_brother = options.big_brother,
             token = options.token,
             table = $(this),
             thead = table.find('thead'),
@@ -20,6 +21,7 @@
 
             $('<tr>')
                 .append(
+                    big_brother ? '<th>' + gettext('User') + '</th>' : '',
                     '<th>' + gettext('Time') + '</th>',
                     '<th>' + gettext('URL') + '</th>',
                     '<th>' + gettext('Type') + '</th>',
@@ -80,6 +82,7 @@
                 .addClass('row' + row)
                 .hide()
                 .append(
+                    big_brother ? '<td>' + line.username + '</td>' : '',
                     '<td>' + time + '</td>',
                     '<td>' + url + '</td>',
                     '<td>' + type + '</td>',

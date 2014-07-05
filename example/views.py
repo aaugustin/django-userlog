@@ -19,6 +19,14 @@ def js18n(request):
 
 
 @user_passes_test(lambda user: user.is_superuser)
+def bigbrother(request):
+    return render(request, 'userlog/live.html', {
+        'title': _("Live user logs"),
+        'token': get_token('*'),
+    })
+
+
+@user_passes_test(lambda user: user.is_superuser)
 def live(request):
     User = get_user_model()
     username_field = User.USERNAME_FIELD

@@ -10,6 +10,7 @@
 <script>
 $(function () {
     $('#result_list').userlog({
+        big_brother: {% if fieldname %}false{% else %}true{% endif %},
         locale: '{{ LANGUAGE_CODE }}',
         token: '{{ token }}',
         wsuri: 'ws://localhost:8080/'
@@ -22,11 +23,13 @@ $(function () {
 
 {% block content %}
 
+{% if fieldname %}
 <form action="{% url 'live-userlog' %}" method="GET">
 <label for="username">{{ fieldname|capfirst }}</label>
 <input type="text" name="username">
 <input type="submit" value="{% trans 'Search' %}">
 </form>
+{% endif %}
 
 {% if token %}
 <table id="result_list" class="module">
