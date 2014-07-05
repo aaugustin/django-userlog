@@ -14,12 +14,16 @@ class UserLogMiddleware(object):
         options = get_userlog_settings()
 
         log = self.get_log(request, response)
+        raw_log = json.dumps(log).encode()
         log_key = 'log:{}'.format(request.user.get_username())
+        channel = 'userlog:{}'.format(log_key)
 
         pipe = redis.pipeline()
-        pipe.lpush(log_key, json.dumps(log).encode())
+        pipe.lpush(log_key, raw_log)
         pipe.ltrim(log_key, 0, options.max_size)
         pipe.expire(log_key, options.timeout)
+        if options.publish:
+            pipe.publish(channel, raw_log)
         pipe.execute()
 
         return response

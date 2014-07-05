@@ -9,6 +9,7 @@ from django.core.cache import caches
 from django.core.exceptions import ImproperlyConfigured
 from django.dispatch import receiver
 from django.test.signals import setting_changed
+from django.utils.crypto import get_random_string
 from django.utils.timezone import utc
 
 
@@ -72,7 +73,20 @@ def get_log(username):
     return log
 
 
-UserLogSettings = namedtuple('UserLogSettings', ['timeout', 'max_size'])
+def get_token(username, length=20, timeout=20):
+    """
+    Obtain an access token that can be passed to a websocket client.
+    """
+    redis = get_redis_client()
+    token = get_random_string(length)
+    token_key = 'token:{}'.format(token)
+    redis.set(token_key, username)
+    redis.expire(token_key, timeout)
+    return token
+
+
+UserLogSettings = namedtuple('UserLogSettings',
+                             ['timeout', 'max_size', 'publish'])
 
 
 def get_userlog_settings():
@@ -89,6 +103,7 @@ def get_userlog_settings():
         # Hardcode the default value because it isn't exposed by Django.
         timeout=int(userlog.get('TIMEOUT', 300)),
         max_size=int(options.get('MAX_SIZE', 25)),
+        publish=bool(userlog.get('PUBLISH', True)),
     )
 
     return _settings

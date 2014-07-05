@@ -1,0 +1,37 @@
+{% extends "admin/base_site.html" %}
+{% load admin_static %}
+
+{% block extrahead %}
+
+{% if token %}
+<script src="{% static 'admin/js/jquery.js' %}"></script>
+<script src="{% static 'userlog/js/live.js' %}"></script>
+<script>
+$(function () {
+    $('#result_list').userlog({
+        locale: '{{ LANGUAGE_CODE }}',
+        token: '{{ token }}',
+        wsuri: 'ws://localhost:8080/'
+    });
+});
+</script>
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<form action="{% url 'live-userlog' %}" method="GET">
+<label for="username">{{ username_field|capfirst }}:</label>
+<input type="text" name="username">
+<input type="submit" value="Search">
+</form>
+
+{% if token %}
+<table id="result_list" class="module">
+<thead></thead>
+<tbody></tbody>
+</table>
+{% endif %}
+
+{% endblock %}

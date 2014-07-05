@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<form action="{% url 'search' %}" method="GET">
+<form action="{% url 'static-userlog' %}" method="GET">
 <label for="username">{{ username_field|capfirst }}:</label>
 <input type="text" name="username">
 <input type="submit" value="Search">
@@ -41,7 +41,7 @@
                 {% endif %}
             </td>
             <td>
-                {% if line.method == 'GET' or line.method == 'HEAD' %}
+                {% if line.method == 'GET' %}
                 Read
                 {% elif line.method == 'POST' %}
                 Write
