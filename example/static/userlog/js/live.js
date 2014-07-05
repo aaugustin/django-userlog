@@ -20,10 +20,10 @@
 
             $('<tr>')
                 .append(
-                    '<th>Time</th>',
-                    '<th>URL</th>',
-                    '<th>Type</th>',
-                    '<th>Result</th>'
+                    '<th>' + gettext('Time') + '</th>',
+                    '<th>' + gettext('URL') + '</th>',
+                    '<th>' + gettext('Type') + '</th>',
+                    '<th>' + gettext('Result') + '</th>'
                 )
                 .appendTo(thead);
         };
@@ -50,28 +50,28 @@
             }
 
             if (line.method === 'GET') {
-                type = 'Read';
+                type = gettext('Read');
             } else if (line.method === 'POST') {
-                type = 'Write';
+                type = gettext('Write');
             } else {
-                type = 'Other';
+                type = gettext('Other');
             }
             type += ' (' + line.method + ')';
 
             result = line.code;
 
             if (line.code < 200) {
-                result = 'Informational';
+                result = gettext('Informational');
             } else if (line.code < 300) {
-                result = 'Success';
+                result = gettext('Success');
             } else if (line.code < 400) {
-                result = 'Redirection';
+                result = gettext('Redirection');
             } else if (line.code < 500) {
-                result = 'Client error';
+                result = gettext('Client error');
             } else if (line.code < 600) {
-                result = 'Server error';
+                result = gettext('Server error');
             } else {
-                result = 'Non-standard';
+                result = gettext('Non-standard');
             }
             result += ' (' + line.code + ')';
 

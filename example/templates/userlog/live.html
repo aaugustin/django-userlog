@@ -1,10 +1,11 @@
 {% extends "admin/base_site.html" %}
-{% load admin_static %}
+{% load admin_static i18n %}
 
 {% block extrahead %}
 
 {% if token %}
 <script src="{% static 'admin/js/jquery.js' %}"></script>
+<script src="{% url 'js18n-userlog' %}"></script>
 <script src="{% static 'userlog/js/live.js' %}"></script>
 <script>
 $(function () {
@@ -22,9 +23,9 @@ $(function () {
 {% block content %}
 
 <form action="{% url 'live-userlog' %}" method="GET">
-<label for="username">{{ username_field|capfirst }}:</label>
+<label for="username">{{ fieldname|capfirst }}</label>
 <input type="text" name="username">
-<input type="submit" value="Search">
+<input type="submit" value="{% trans 'Search' %}">
 </form>
 
 {% if token %}

@@ -1,12 +1,12 @@
 {% extends "admin/base_site.html" %}
-{% load humanize %}
+{% load humanize i18n %}
 
 {% block content %}
 
 <form action="{% url 'static-userlog' %}" method="GET">
-<label for="username">{{ username_field|capfirst }}:</label>
+<label for="username">{{ fieldname|capfirst }}</label>
 <input type="text" name="username">
-<input type="submit" value="Search">
+<input type="submit" value="{% trans 'Search' %}">
 </form>
 
 {% if log %}
@@ -14,16 +14,16 @@
     <thead>
         <tr>
             <th>
-                Time
+                {% trans 'Time' %}
             </th>
             <th>
-                URL
+                {% trans 'URL' %}
             </th>
             <th>
-                Type
+                {% trans 'Type' %}
             </th>
             <th>
-                Result
+                {% trans 'Result' %}
             </th>
         </tr>
     </thead>
@@ -42,27 +42,27 @@
             </td>
             <td>
                 {% if line.method == 'GET' %}
-                Read
+                {% trans 'Read' %}
                 {% elif line.method == 'POST' %}
-                Write
+                {% trans 'Write' %}
                 {% else %}
-                Other
+                {% trans 'Other' %}
                 {% endif %}
                 ({{ line.method }})
             </td>
             <td style="background-color: #{% if line.code < 400 %}DDFFDD{% else %}FFEFEF{% endif %};">
                 {% if line.code < 200 %}
-                Informational
+                {% trans 'Informational' %}
                 {% elif line.code < 300 %}
-                Success
+                {% trans 'Success' %}
                 {% elif line.code < 400 %}
-                Redirection
+                {% trans 'Redirection' %}
                 {% elif line.code < 500 %}
-                Client error
+                {% trans 'Client error' %}
                 {% elif line.code < 600 %}
-                Server error
+                {% trans 'Server error' %}
                 {% else %}
-                Non-standard
+                {% trans 'Non-standard' %}
                 {% endif %}
                 ({{ line.code }})
             </td>

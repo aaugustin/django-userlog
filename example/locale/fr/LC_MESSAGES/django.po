@@ -1,0 +1,75 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-07-05 12:23+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Time"
+msgstr "Heure"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Result"
+msgstr "Résultat"
+
+msgid "Read"
+msgstr "Lecture"
+
+msgid "Write"
+msgstr "Écriture"
+
+msgid "Other"
+msgstr "Autre"
+
+msgid "Informational"
+msgstr "Information"
+
+msgid "Success"
+msgstr "Succès"
+
+msgid "Redirection"
+msgstr "Redirection"
+
+msgid "Client error"
+msgstr "Erreur du client"
+
+msgid "Server error"
+msgstr "Erreur du serveur"
+
+msgid "Non-standard"
+msgstr "Non-standard"
+
+msgid "User {} not found."
+msgstr "Utilisateur {} non trouvé."
+
+msgid "Logs found for {}."
+msgstr "Journal trouvé pour {}."
+
+msgid "Live user logs"
+msgstr "Journal utilisateur dynamique"
+
+msgid "No logs for {}."
+msgstr "Pas de journal pour {}."
+
+msgid "Static user logs"
+msgstr "Journal utilisateur statique"
