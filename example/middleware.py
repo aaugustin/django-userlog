@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 
 
-class AdminAutoLoginMiddleware(object):
+class AdminAutoLoginMiddleware:
     """
     Automatically creates and logs in an "admin" user.
 

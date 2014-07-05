@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-05 21:04+0200\n"
+"POT-Creation-Date: 2014-07-05 22:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,8 +17,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-msgid "User"
-msgstr "Utilisateur"
+msgid "Live log"
+msgstr "Journal dynamique"
+
+msgid "Live logs"
+msgstr "Journaux dynamiques"
+
+msgid "Static log"
+msgstr "Journal statique"
+
+msgid "Static logs"
+msgstr "Journaux statiques"
+
+msgid "User logs"
+msgstr "Journaux utilisateurs"
+
+msgid "Search"
+msgstr "Rechercher"
 
 msgid "Time"
 msgstr "Heure"
@@ -58,3 +73,12 @@ msgstr "Erreur du serveur"
 
 msgid "Non-standard"
 msgstr "Non-standard"
+
+msgid "User {} not found."
+msgstr "Utilisateur {} non trouvé."
+
+msgid "Logs found for {}."
+msgstr "Journal trouvé pour {}."
+
+msgid "No logs for {}."
+msgstr "Pas de journal pour {}."

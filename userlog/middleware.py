@@ -4,7 +4,7 @@ import time
 from .util import get_redis_client, get_userlog_settings
 
 
-class UserLogMiddleware(object):
+class UserLogMiddleware:
 
     def process_response(self, request, response):
         if not request.user.is_authenticated():

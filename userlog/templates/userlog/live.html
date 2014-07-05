@@ -1,11 +1,11 @@
-{% extends "admin/base_site.html" %}
+{% extends "admin/change_list.html" %}
 {% load admin_static i18n %}
 
 {% block extrahead %}
 
 {% if token %}
 <script src="{% static 'admin/js/jquery.js' %}"></script>
-<script src="{% url 'js18n-userlog' %}"></script>
+<script src="{% url 'admin:userlog_js18n' %}"></script>
 <script src="{% static 'userlog/js/live.js' %}"></script>
 <script>
 $(function () {
@@ -21,10 +21,20 @@ $(function () {
 
 {% endblock %}
 
+{% block breadcrumbs %}
+
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label='userlog' %}">{% trans 'User logs' %}</a>
+&rsaquo; {% trans 'Static logs' %}
+</div>
+
+{% endblock %}
+
 {% block content %}
 
 {% if fieldname %}
-<form action="{% url 'live-userlog' %}" method="GET">
+<form action="{% url 'admin:userlog_live' %}" method="GET">
 <label for="username">{{ fieldname|capfirst }}</label>
 <input type="text" name="username">
 <input type="submit" value="{% trans 'Search' %}">

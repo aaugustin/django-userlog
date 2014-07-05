@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.http import last_modified
 from django.views.i18n import javascript_catalog
 
-from userlog.util import get_log, get_token
+from .util import get_log, get_token
 
 
 last_modified_date = timezone.now()
@@ -21,7 +21,7 @@ def js18n(request):
 @user_passes_test(lambda user: user.is_superuser)
 def bigbrother(request):
     return render(request, 'userlog/live.html', {
-        'title': _("Live user logs"),
+        'title': _("Live logs"),
         'token': get_token('*'),
     })
 
@@ -44,7 +44,7 @@ def live(request):
             messages.info(request, _("Logs found for {}.").format(username))
 
     return render(request, 'userlog/live.html', {
-        'title': _("Live user logs"),
+        'title': _("Live log"),
         'token': token,
         'fieldname': User._meta.get_field(username_field).verbose_name,
     })
@@ -71,7 +71,7 @@ def static(request):
                 messages.warning(request, _("No logs for {}.").format(username))    # noqa
 
     return render(request, 'userlog/static.html', {
-        'title': _("Static user logs"),
+        'title': _("Static log"),
         'log': log,
         'fieldname': User._meta.get_field(username_field).verbose_name,
     })
