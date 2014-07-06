@@ -29,7 +29,7 @@ class LiveUserLogModelAdmin(admin.ModelAdmin):
         return [
             url(r'^$', av(live), name='userlog_live'),
             # Integrates into the admin index and app index.
-            url(r'^$', lambda: None, name='userlog_live_changelist'),
+            url(r'^$', av(live), name='userlog_live_changelist'),
             # Easter egg.
             url(r'^bigbrother/', av(bigbrother), name='userlog_bigbrother'),
         ]
@@ -54,7 +54,7 @@ class StaticUserLogModelAdmin(admin.ModelAdmin):
         return [
             url(r'^$', av(static), name='userlog_static'),
             # Integrates into the admin index and app index.
-            url(r'^$', lambda: None, name='userlog_static_changelist'),
+            url(r'^$', av(static), name='userlog_static_changelist'),
             # This needs to live somewhere.
             url(r'^jsi18n/$', av(js18n), name='userlog_js18n'),
         ]
