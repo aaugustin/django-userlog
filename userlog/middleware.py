@@ -9,7 +9,7 @@ from .util import get_redis_client, get_userlog_settings
 class UserLogMiddleware:
 
     def process_response(self, request, response):
-        if not request.user.is_authenticated():
+        if not (hasattr(request, 'user') and request.user.is_authenticated()):
             return response
 
         options = get_userlog_settings()
