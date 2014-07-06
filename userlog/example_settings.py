@@ -1,5 +1,5 @@
 """
-Django settings for example project.
+Django settings for userlog example project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/dev/topics/settings/
@@ -44,14 +44,12 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'example.middleware.AdminAutoLoginMiddleware',
+    'userlog.middleware.AdminAutoLoginMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'example.urls'
-
-WSGI_APPLICATION = 'example.wsgi.application'
+ROOT_URLCONF = 'userlog.example_urls'
 
 # Cache
 # https://docs.djangoproject.com/en/dev/ref/settings/#caches
