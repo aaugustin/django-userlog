@@ -8,7 +8,7 @@ import websockets
 from django.conf import settings
 
 
-if settings.DEBUG:
+if settings.DEBUG:                                          # pragma: no cover
     logger = logging.getLogger('websockets.server')
     logger.setLevel(logging.DEBUG)
     logger.addHandler(logging.StreamHandler())
@@ -18,8 +18,12 @@ if settings.DEBUG:
 def redis_connection():
     userlog = settings.CACHES['userlog']
     options = userlog.get('OPTIONS', {})
-    host, port = userlog['LOCATION'].rsplit(':', 1)
-    port = int(port)
+    if ':' in userlog['LOCATION']:
+        host, port = userlog['LOCATION'].rsplit(':', 1)
+        port = int(port)
+    else:
+        host = userlog['LOCATION']
+        port = 0
     db = options.get('DB', 1)
     password = options.get('PASSWORD', None)
     redis = yield from asyncio_redis.Connection.create(
@@ -76,7 +80,7 @@ def userlog(websocket, uri):
         redis.close()
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':                                  # pragma: no cover
     start_server = websockets.serve(userlog, 'localhost', 8080)
     asyncio.get_event_loop().run_until_complete(start_server)
     try:

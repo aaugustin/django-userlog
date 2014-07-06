@@ -98,4 +98,5 @@ STATIC_URL = '/static/'
 
 USERLOG_IGNORE_URLS = [
     r'/jsi18n/',
+    r'^/favicon\.ico$',
 ]
