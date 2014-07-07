@@ -1,10 +1,19 @@
-import asyncio
+# coding: utf-8
+
+from __future__ import unicode_literals
+
+try:
+    import asyncio
+except ImportError:
+    asyncio = None
 import os
 import signal
 import subprocess
 import threading
+import unittest
 
-import websockets
+if asyncio:
+    import websockets
 
 from django.conf import settings
 from django.contrib.admin.tests import AdminSeleniumWebDriverTestCase
@@ -12,7 +21,8 @@ from django.contrib.auth.models import User
 
 from selenium.webdriver.support import expected_conditions as ec
 
-from . import realtime
+if asyncio:
+    from . import realtime
 from . import util
 
 
@@ -94,6 +104,7 @@ class UserLogTestCase(AdminSeleniumWebDriverTestCase):
         self.wait_for_text('li.warning', "Pas de journal pour autre.")
 
 
+@unittest.skipUnless(asyncio, "Live tests require Python ≥ 3.3 and asyncio.")
 class UserLogRealTimeTestCase(UserLogTestCase):
 
     # setUpClass & tearDownClass repeat code from UserLogTestCase and then
