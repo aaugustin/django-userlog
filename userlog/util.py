@@ -88,7 +88,7 @@ def get_token(username, length=20, timeout=20):
 
 UserLogSettings = namedtuple(
     'UserLogSettings',
-    ['timeout', 'max_size', 'publish', 'ignore_urls'])
+    ['timeout', 'max_size', 'publish', 'ignore_urls', 'websocket_address'])
 
 
 def get_userlog_settings():
@@ -100,6 +100,8 @@ def get_userlog_settings():
     userlog = settings.CACHES['userlog']
     options = userlog.get('OPTIONS', {})
     ignore_urls = getattr(settings, 'USERLOG_IGNORE_URLS', [])
+    websocket_address = getattr(settings, 'USERLOG_WEBSOCKET_ADDRESS',
+                                'ws://localhost:8080/')
 
     # Coerce values into expected types in order to detect invalid settings.
     _settings = UserLogSettings(
@@ -108,6 +110,7 @@ def get_userlog_settings():
         max_size=int(options.get('MAX_SIZE', 25)),
         publish=bool(userlog.get('PUBLISH', True)),
         ignore_urls=[re.compile(pattern) for pattern in ignore_urls],
+        websocket_address=str(websocket_address),
     )
 
     return _settings

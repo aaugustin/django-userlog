@@ -106,21 +106,24 @@ class UserLogRealTimeTestCase(UserLogTestCase):
             ['redis-server', '--port', '0', '--unixsocket', 'redis.sock'],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        def run_realtime():
-            event_loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(event_loop)
-
-            cls.event_loop = event_loop
-            cls.realtime_server = event_loop.run_until_complete(
-                websockets.serve(realtime.userlog, 'localhost', 8080))
-            event_loop.run_until_complete(cls.realtime_server.wait_closed())
-            event_loop.close()
-
-        cls.realtime_thread = threading.Thread(target=run_realtime)
+        cls.realtime_thread = threading.Thread(target=cls.run_realtime)
         cls.realtime_thread.start()
 
         os.environ['DJANGO_SELENIUM_TESTS'] = 'true'
         super(UserLogTestCase, cls).setUpClass()        # call grand-parent.
+
+    @classmethod
+    def run_realtime(cls):
+        event_loop = asyncio.new_event_loop()
+        cls.event_loop = event_loop
+        asyncio.set_event_loop(event_loop)
+
+        userlog_settings = util.get_userlog_settings()
+        uri = websockets.parse_uri(userlog_settings.websocket_address)
+        start_server = websockets.serve(realtime.userlog, uri.host, uri.port)
+        cls.realtime_server = event_loop.run_until_complete(start_server)
+        event_loop.run_until_complete(cls.realtime_server.wait_closed())
+        event_loop.close()
 
     @classmethod
     def tearDownClass(cls):

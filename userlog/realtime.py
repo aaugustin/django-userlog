@@ -5,7 +5,10 @@ import logging
 import asyncio_redis
 import websockets
 
+import django
 from django.conf import settings
+
+from .util import get_userlog_settings
 
 
 if settings.DEBUG:                                          # pragma: no cover
@@ -81,8 +84,14 @@ def userlog(websocket, uri):
 
 
 if __name__ == '__main__':                                  # pragma: no cover
-    start_server = websockets.serve(userlog, 'localhost', 8080)
+    django.setup()
+
+    uri = websockets.parse_uri(get_userlog_settings().websocket_address)
+    if uri.secure:
+        raise ValueError("SSL support requires explicit configuration")
+    start_server = websockets.serve(userlog, uri.host, uri.port)
     asyncio.get_event_loop().run_until_complete(start_server)
+
     try:
         asyncio.get_event_loop().run_forever()
     except KeyboardInterrupt:

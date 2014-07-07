@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.http import last_modified
 from django.views.i18n import javascript_catalog
 
-from .util import get_log, get_token
+from .util import get_log, get_token, get_userlog_settings
 
 
 last_modified_date = timezone.now()
@@ -23,6 +23,7 @@ def bigbrother(request):
     return render(request, 'userlog/live.html', {
         'title': _("Live logs"),
         'token': get_token('*'),
+        'wsuri': get_userlog_settings().websocket_address,
     })
 
 
@@ -46,6 +47,7 @@ def live(request):
     return render(request, 'userlog/live.html', {
         'title': _("Live log"),
         'token': token,
+        'wsuri': get_userlog_settings().websocket_address,
         'fieldname': User._meta.get_field(username_field).verbose_name,
     })
 
