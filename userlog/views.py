@@ -15,7 +15,7 @@ last_modified_date = timezone.now()
 
 @last_modified(lambda req, **kw: last_modified_date)
 def js18n(request):
-    return javascript_catalog(request, 'djangojs', ['example'])
+    return javascript_catalog(request, 'djangojs', ['userlog'])
 
 
 @user_passes_test(lambda user: user.is_superuser)
