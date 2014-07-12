@@ -97,20 +97,19 @@ def get_userlog_settings():
     if _settings is not None:
         return _settings
 
-    userlog = settings.CACHES['userlog']
-    options = userlog.get('OPTIONS', {})
-    ignore_urls = getattr(settings, 'USERLOG_IGNORE_URLS', [])
-    websocket_address = getattr(settings, 'USERLOG_WEBSOCKET_ADDRESS',
-                                'ws://localhost:8080/')
+    def get_setting(name, default):
+        return getattr(settings, 'USERLOG_' + name, default)
 
     # Coerce values into expected types in order to detect invalid settings.
     _settings = UserLogSettings(
-        # Hardcode the default value because it isn't exposed by Django.
-        timeout=int(userlog.get('TIMEOUT', 300)),
-        max_size=int(options.get('MAX_SIZE', 25)),
-        publish=bool(userlog.get('PUBLISH', True)),
-        ignore_urls=[re.compile(pattern) for pattern in ignore_urls],
-        websocket_address=str(websocket_address),
+        # Hardcode the default timeout because it isn't exposed by Django.
+        timeout=int(settings.CACHES['userlog'].get('TIMEOUT', 300)),
+        max_size=int(get_setting('MAX_SIZE', 25)),
+        publish=bool(get_setting('PUBLISH', True)),
+        ignore_urls=[re.compile(pattern)
+                     for pattern in get_setting('IGNORE_URLS', [])],
+        websocket_address=str(get_setting('WEBSOCKET_ADDRESS',
+                                          'ws://localhost:8080/')),
     )
 
     return _settings
