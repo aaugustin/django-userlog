@@ -13,8 +13,8 @@ customer support solutions often provide this feature — if you can afford it!)
 Requirements
 ------------
 
-This application requires Django ≥ 1.7 and Python ≥ 3.3. Static logs also work
-on Python 2.7; live logs don't. It uses a Redis server as storage backend.
+This application requires Django ≥ 1.7 and Python ≥ 3.3 or 2.7. It uses a
+Redis server as storage backend.
 
 Your website must be using Django's auth framework. The target user must be
 authenticated and you must be able to obtain their username. How you achieve
@@ -32,6 +32,11 @@ In order to use the live logs, you need some extra dependencies:
 
     pip install asyncio_redis websockets
     pip install asyncio                     # only for Python 3.3
+
+If your project is running on Python ≥ 3.3, install everything in the same
+virtualenv. If your project requires Python 2.7, either you can live with the
+static logs, or you can create a separate virtualenv with Python ≥ 3.3 for the
+websockets server that powers the live logs.
 
 Add `'userlog'` to your `INSTALLED_APPS` setting.
 
