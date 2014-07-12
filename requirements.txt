@@ -1,0 +1,19 @@
+# Regular stuff, should work on Python 2.7
+
+Django
+django-redis-cache      # or django-redis (untested)
+hiredis
+redis
+
+# Real-time stuff, requires Python 3.3+
+
+asyncio                 # Python 3.4 uses the stdlib version anyway
+asyncio_redis
+websockets
+
+# Development
+
+coverage
+flake8
+selenium
+tox

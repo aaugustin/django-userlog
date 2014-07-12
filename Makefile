@@ -6,7 +6,7 @@ example:
 
 realtime:
 	DJANGO_SETTINGS_MODULE=userlog.example_settings \
-		python userlog/realtime.py
+		python -m userlog.realtime
 
 test:
 	DJANGO_SETTINGS_MODULE=userlog.test_settings \
