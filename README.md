@@ -13,7 +13,7 @@ customer support solutions often provide this feature — if you can afford it!)
 Requirements
 ------------
 
-This application requires Django ≥ 1.7 and Python ≥ 3.3 or 2.7. It uses a
+This application requires Django ≥ 1.8 and Python ≥ 3.3 or 2.7. It uses a
 Redis server as storage backend.
 
 Your website must be using Django's auth framework. The target user must be
