@@ -102,4 +102,4 @@
         };
     };
 
-}(jQuery));
+}(django.jQuery));

@@ -2,7 +2,7 @@
 
 example:
 	DJANGO_SETTINGS_MODULE=userlog.example_settings \
-		django-admin.py runserver
+		django-admin runserver
 
 realtime:
 	DJANGO_SETTINGS_MODULE=userlog.example_settings \
@@ -10,13 +10,16 @@ realtime:
 
 test:
 	DJANGO_SETTINGS_MODULE=userlog.test_settings \
-		django-admin.py test --liveserver=localhost:8040 userlog
+		django-admin test userlog
 
 coverage:
 	coverage erase
 	DJANGO_SETTINGS_MODULE=userlog.test_settings \
-		coverage run --branch --source=userlog `which django-admin.py` test --liveserver=localhost:8040 userlog
+		coverage run --branch --source=userlog `which django-admin` test userlog
 	coverage html
 
 flake8:
 	flake8 userlog
+
+isort:
+	isort --check-only --recursive userlog

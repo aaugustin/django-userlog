@@ -3,19 +3,21 @@
 
 {% block extrahead %}
 
+{{ block.super }}
+
 {% if token %}
-<script src="{% static 'admin/js/jquery.js' %}"></script>
-<script src="{% url 'admin:userlog_js18n' %}"></script>
-<script src="{% static 'userlog/js/live.js' %}"></script>
+<script src="{% url 'admin:userlog_jsi18n' %}"></script>
 <script>
-$(function () {
-    $('#result_list').userlog({
-        big_brother: {% if fieldname %}false{% else %}true{% endif %},
-        locale: '{{ LANGUAGE_CODE }}',
-        token: '{{ token }}',
-        wsuri: '{{ wsuri }}'
+(function ($) {
+    $(function () {
+        $('#result_list').userlog({
+            big_brother: {% if fieldname %}false{% else %}true{% endif %},
+            locale: '{{ LANGUAGE_CODE }}',
+            token: '{{ token }}',
+            wsuri: '{{ wsuri }}'
+        });
     });
-});
+})(django.jQuery)
 </script>
 {% endif %}
 
@@ -26,7 +28,7 @@ $(function () {
 <div class="breadcrumbs">
 <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
 &rsaquo; <a href="{% url 'admin:app_list' app_label='userlog' %}">{% trans 'User logs' %}</a>
-&rsaquo; {% trans 'Static logs' %}
+&rsaquo; {% trans 'Live logs' %}
 </div>
 
 {% endblock %}

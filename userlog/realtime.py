@@ -3,13 +3,11 @@ import json
 import logging
 
 import asyncio_redis
-import websockets
-
 import django
+import websockets
 from django.conf import settings
 
 from .util import get_userlog_settings
-
 
 if settings.DEBUG:                                          # pragma: no cover
     logger = logging.getLogger('websockets.server')
@@ -57,30 +55,40 @@ def userlog(websocket, uri):
             yield from subscriber.psubscribe([channel])
             while True:
                 reply = yield from subscriber.next_published()
-                if not websocket.open:
-                    break
                 data = json.loads(reply.value)
                 data['username'] = reply.channel.rpartition(':')[2]
-                yield from websocket.send(json.dumps(data))
+                line = json.dumps(data)
+                try:
+                    yield from websocket.send(line)
+                except websockets.ConnectionClosed:
+                    return
 
         else:                           # logs for a single user
             # Send backlock
             log = yield from redis.lrange(log_key, 0, -1)
             for item in reversed(list(log)):
-                item = yield from item
-                yield from websocket.send(item)
+                line = yield from item
+                try:
+                    yield from websocket.send(line)
+                except websockets.ConnectionClosed:
+                    return
 
             # Stream new lines
             subscriber = yield from redis.start_subscribe()
             yield from subscriber.subscribe([channel])
             while True:
                 reply = yield from subscriber.next_published()
-                if not websocket.open:
-                    break
-                yield from websocket.send(reply.value)
+                line = reply.value
+                try:
+                    yield from websocket.send(line)
+                except websockets.ConnectionClosed:
+                    return
 
     finally:
         redis.close()
+        # Loop one more time to complete the cancellation of redis._reader_f,
+        # which runs redis._reader_coroutine(), after redis.connection_lost().
+        yield from asyncio.sleep(0)
 
 
 if __name__ == '__main__':                                  # pragma: no cover

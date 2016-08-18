@@ -1,5 +1,4 @@
 {% extends "admin/base_site.html" %}
-{% load cycle from future %}
 {% load humanize i18n %}
 
 {% block breadcrumbs %}
@@ -7,7 +6,7 @@
 <div class="breadcrumbs">
 <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
 &rsaquo; <a href="{% url 'admin:app_list' app_label='userlog' %}">{% trans 'User logs' %}</a>
-&rsaquo; {% trans 'Live logs' %}
+&rsaquo; {% trans 'Static logs' %}
 </div>
 
 {% endblock %}

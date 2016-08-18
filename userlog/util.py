@@ -1,10 +1,9 @@
 import datetime
-from collections import namedtuple
 import json
 import re
+from collections import namedtuple
 
 import redis
-
 from django.conf import settings
 from django.core.cache import caches
 from django.core.exceptions import ImproperlyConfigured
@@ -12,7 +11,6 @@ from django.dispatch import receiver
 from django.test.signals import setting_changed
 from django.utils.crypto import get_random_string
 from django.utils.timezone import utc
-
 
 _client = None      # Cached instance of the Redis client.
 
@@ -40,9 +38,9 @@ def get_redis_client():
 
     try:
         try:
-            _client = cache.client      # django-redis
+            _client = cache.client                  # django-redis
         except AttributeError:
-            _client = cache._client     # django-redis-cache
+            _client = cache.get_master_client()     # django-redis-cache
         assert isinstance(_client, redis.StrictRedis)
     except (AssertionError, AttributeError):
         raise ImproperlyConfigured("'userlog' cache doesn't use Redis.")

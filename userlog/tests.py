@@ -2,33 +2,41 @@
 
 from __future__ import unicode_literals
 
-try:
-    import asyncio
-except ImportError:
-    asyncio = None
 import os
 import signal
 import subprocess
 import threading
 import unittest
 
-if asyncio:
+import django
+from django.conf import settings
+from django.contrib.auth.models import User
+from selenium.webdriver.support import expected_conditions as ec
+
+from . import util
+
+try:
+    import asyncio
+except ImportError:
+    asyncio = None
+else:
     import websockets
 
-from django.conf import settings
-from django.contrib.admin.tests import AdminSeleniumWebDriverTestCase
-from django.contrib.auth.models import User
+try:
+    from django.contrib.admin.tests import AdminSeleniumTestCase
+except ImportError:
+    from django.contrib.admin.tests import AdminSeleniumWebDriverTestCase \
+        as AdminSeleniumTestCase
 
-from selenium.webdriver.support import expected_conditions as ec
 
 if asyncio:
     from . import realtime
-from . import util
 
 
-class UserLogTestCase(AdminSeleniumWebDriverTestCase):
+class UserLogTestCaseBase(AdminSeleniumTestCase):
 
     available_apps = settings.INSTALLED_APPS
+    browsers = ['firefox']
 
     @classmethod
     def setUpClass(cls):
@@ -37,11 +45,11 @@ class UserLogTestCase(AdminSeleniumWebDriverTestCase):
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         os.environ['DJANGO_SELENIUM_TESTS'] = 'true'
-        super(UserLogTestCase, cls).setUpClass()
+        super(UserLogTestCaseBase, cls).setUpClass()
 
     @classmethod
     def tearDownClass(cls):
-        super(UserLogTestCase, cls).tearDownClass()
+        super(UserLogTestCaseBase, cls).tearDownClass()
 
         cls.redis.send_signal(signal.SIGINT)
         cls.redis.wait()
@@ -59,6 +67,9 @@ class UserLogTestCase(AdminSeleniumWebDriverTestCase):
         alert = self.selenium.switch_to_alert()
         self.assertEqual(alert.text, expected_text)
         alert.accept()
+
+
+class UserLogTestCase(UserLogTestCaseBase):
 
     def test_live_bigbrother(self):
         self.selenium.get(self.live_server_url + '/userlog/live/bigbrother/')
@@ -105,10 +116,10 @@ class UserLogTestCase(AdminSeleniumWebDriverTestCase):
 
 
 @unittest.skipUnless(asyncio, "Live tests require Python ≥ 3.3 and asyncio.")
-class UserLogRealTimeTestCase(UserLogTestCase):
+class UserLogRealTimeTestCase(UserLogTestCaseBase):
 
-    # setUpClass & tearDownClass repeat code from UserLogTestCase and then
-    # call into AdminSeleniumWebDriverTestCase because the shutdown sequence
+    # setUpClass & tearDownClass repeat code from UserLogTestCaseBase and
+    # then call into AdminSeleniumTestCase because the shutdown sequence
     # must follow the dependency order: selenium -> websockets -> redis.
 
     @classmethod
@@ -121,26 +132,34 @@ class UserLogRealTimeTestCase(UserLogTestCase):
         cls.realtime_thread.start()
 
         os.environ['DJANGO_SELENIUM_TESTS'] = 'true'
-        super(UserLogTestCase, cls).setUpClass()        # call grand-parent.
+        super(UserLogTestCaseBase, cls).setUpClass()        # call grand-parent
 
     @classmethod
     def run_realtime(cls):
         event_loop = asyncio.new_event_loop()
-        cls.event_loop = event_loop
-        asyncio.set_event_loop(event_loop)
+        asyncio.set_event_loop(event_loop)  # required by asyncio_redis
 
         userlog_settings = util.get_userlog_settings()
         uri = websockets.parse_uri(userlog_settings.websocket_address)
-        start_server = websockets.serve(realtime.userlog, uri.host, uri.port)
-        cls.realtime_server = event_loop.run_until_complete(start_server)
-        event_loop.run_until_complete(cls.realtime_server.wait_closed())
+        start_server = websockets.serve(
+            realtime.userlog, uri.host, uri.port, loop=event_loop)
+
+        stop_server = asyncio.Future(loop=event_loop)
+        cls.stop_realtime_server = lambda: event_loop.call_soon_threadsafe(
+            lambda: stop_server.set_result(True))
+
+        realtime_server = event_loop.run_until_complete(start_server)
+        event_loop.run_until_complete(stop_server)
+        realtime_server.close()
+        event_loop.run_until_complete(realtime_server.wait_closed())
+
         event_loop.close()
 
     @classmethod
     def tearDownClass(cls):
-        super(UserLogTestCase, cls).tearDownClass()     # call grand-parent.
+        super(UserLogTestCaseBase, cls).tearDownClass()     # call grand-parent
 
-        cls.event_loop.call_soon_threadsafe(cls.realtime_server.close)
+        cls.stop_realtime_server()
         cls.realtime_thread.join()
 
         cls.redis.send_signal(signal.SIGINT)
@@ -149,15 +168,23 @@ class UserLogRealTimeTestCase(UserLogTestCase):
     def test_live_bigbrother(self):
         self.selenium.get(self.live_server_url + '/userlog/live/bigbrother/')
 
+        # This is an indirect way to wait for the websocket connection.
+        user_heading = "Utilisateur"
+        if django.VERSION >= (1, 9):
+            user_heading = user_heading.upper()
+        self.wait_for_text('table#result_list thead tr th:nth-child(1)',
+                           user_heading)
+
         self.client.get('/non_existing/')
+
         self.wait_for_text('table#result_list tbody tr td:nth-child(1)',
                            "admin")
         self.wait_for_text('table#result_list tbody tr td:nth-child(3)',
                            "/non_existing/")
         self.wait_for_text('table#result_list tbody tr td:nth-child(4)',
-                           "Read (GET)")
+                           "Lecture (GET)")
         self.wait_for_text('table#result_list tbody tr td:nth-child(5)',
-                           "Client error (404)")
+                           "Erreur du client (404)")
 
     def test_live_logs(self):
         self.selenium.get(self.live_server_url + '/')
@@ -172,17 +199,14 @@ class UserLogRealTimeTestCase(UserLogTestCase):
         self.wait_for_text('table#result_list tbody tr td:nth-child(2)',
                            "/userlog/live/")
         self.wait_for_text('table#result_list tbody tr td:nth-child(3)',
-                           "Read (GET)")
+                           "Lecture (GET)")
         self.wait_for_text('table#result_list tbody tr td:nth-child(4)',
-                           "Success (200)")
+                           "Succès (200)")
 
         self.client.get('/non_existing/')
         self.wait_for_text('table#result_list tbody tr td:nth-child(2)',
                            "/non_existing/")
         self.wait_for_text('table#result_list tbody tr td:nth-child(3)',
-                           "Read (GET)")
+                           "Lecture (GET)")
         self.wait_for_text('table#result_list tbody tr td:nth-child(4)',
-                           "Client error (404)")
-
-    def test_static_logs(self):
-        return              # don't repeat test that doesn't involve realtime
+                           "Erreur du client (404)")

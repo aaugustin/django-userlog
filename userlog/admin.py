@@ -4,7 +4,7 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from .views import js18n, bigbrother, live, static
+from .views import bigbrother, jsi18n, live, static
 
 
 class _meta:
@@ -56,7 +56,7 @@ class StaticUserLogModelAdmin(admin.ModelAdmin):
             # Integrates into the admin index and app index.
             url(r'^$', av(static), name='userlog_static_changelist'),
             # This needs to live somewhere.
-            url(r'^jsi18n/$', av(js18n), name='userlog_js18n'),
+            url(r'^jsi18n/$', av(jsi18n), name='userlog_jsi18n'),
         ]
 
 

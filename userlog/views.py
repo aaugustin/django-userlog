@@ -1,6 +1,8 @@
+import django
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib import messages
+from django.forms import Media
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -9,12 +11,20 @@ from django.views.i18n import javascript_catalog
 
 from .util import get_log, get_token, get_userlog_settings
 
+LIVE_MEDIA = Media(js=[
+    'admin/js/' + (
+        'vendor/jquery/' if django.VERSION >= (1, 9) else ''
+    ) + 'jquery.js',
+    'admin/js/jquery.init.js',
+    'userlog/js/live.js',
+])
+
 
 last_modified_date = timezone.now()
 
 
 @last_modified(lambda req, **kw: last_modified_date)
-def js18n(request):
+def jsi18n(request):
     return javascript_catalog(request, 'djangojs', ['userlog'])
 
 
@@ -24,6 +34,7 @@ def bigbrother(request):
         'title': _("Live logs"),
         'token': get_token('*'),
         'wsuri': get_userlog_settings().websocket_address,
+        'media': LIVE_MEDIA,
     })
 
 
@@ -49,6 +60,7 @@ def live(request):
         'token': token,
         'wsuri': get_userlog_settings().websocket_address,
         'fieldname': User._meta.get_field(username_field).verbose_name,
+        'media': LIVE_MEDIA,
     })
 
 

@@ -8,9 +8,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+import django
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
@@ -20,8 +23,6 @@ SECRET_KEY = '9=vw9u7zi*e&zrj%)94v*(t1lnuu4v+u$$dl#))x+s!8!lzj(^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -38,18 +39,39 @@ INSTALLED_APPS = (
     'userlog',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'userlog.middleware.UserLogMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
     'userlog.middleware.AdminAutoLoginMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
 )
 
+if django.VERSION < (1, 10):
+    MIDDLEWARE_CLASSES = MIDDLEWARE
+    del MIDDLEWARE
+
 ROOT_URLCONF = 'userlog.example_urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'debug': True,
+        },
+    },
+]
 
 # Cache
 # https://docs.djangoproject.com/en/dev/ref/settings/#caches

@@ -5,8 +5,13 @@ from django.contrib.auth import get_user_model
 
 from .util import get_redis_client, get_userlog_settings
 
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:
+    MiddlewareMixin = object
 
-class UserLogMiddleware:
+
+class UserLogMiddleware(MiddlewareMixin):
 
     def process_response(self, request, response):
         if not (hasattr(request, 'user') and request.user.is_authenticated()):
@@ -48,7 +53,7 @@ class UserLogMiddleware:
         }
 
 
-class AdminAutoLoginMiddleware:
+class AdminAutoLoginMiddleware(MiddlewareMixin):
     """
     Automatically creates and logs in an "admin" user.
 
